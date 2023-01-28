@@ -13,14 +13,12 @@ phpmyadmin:
       
       db:
         port: 3306
-        host: 
       ingress:
-        enabled: false
-        annotations:
-          ingress.kubernetes.io/rewrite-target: /
-          nginx.ingress.kubernetes.io/rewrite-target: /
-        path: /
-        # host: foo
+        enabled: true
+        annotations: {}
+
+        path: /phpmyadmin
+        host: cluster
         tls: []
         #  - secretName: chart-example-tls
         #    hosts:

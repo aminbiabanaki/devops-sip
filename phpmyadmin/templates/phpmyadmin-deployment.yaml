@@ -35,7 +35,7 @@ spec:
               value: "{{ .Values.phpmyadmin.db.port }}"
             {{- if .Values.phpmyadmin.db.chartName }}
             - name: DATABASE_HOST
-              value: "{{ template "phpmyadmin.dbfullname" . }}"
+              value: "{{ template "mysql.fullname" . }}"
             {{- else }} 
             - name: DATABASE_HOST
               value: "{{ .Values.phpmyadmin.db.host }}"
