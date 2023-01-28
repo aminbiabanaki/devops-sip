@@ -65,3 +65,18 @@ MYSQL HELPERS
 {{- define "mysql.secretName" -}}
 {{ default (include "mysql.fullname" .) .Values.mysql.existingSecret }}
 {{- end -}}
+
+{{- define "mysql.image" -}}
+{{- $registryName :=  .Values.mysql.image.registry -}}
+{{- $repositoryName := .Values.mysql.image.repository -}}
+{{- $tag := .Values.mysql.image.tag | toString -}}
+{{- printf "%s/%s:%s" $registryName $repositoryName $tag -}}
+{{- end -}}
+
+
+{{- define "mysql.metric.image" -}}
+{{- $registryName :=  .Values.mysql.metric.image.registry -}}
+{{- $repositoryName := .Values.mysql.metric.image.repository -}}
+{{- $tag := .Values.mysql.metric.image.tag | toString -}}
+{{- printf "%s/%s:%s" $registryName $repositoryName $tag -}}
+{{- end -}}
