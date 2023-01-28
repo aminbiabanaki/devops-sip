@@ -45,7 +45,7 @@ MYSQL HELPERS
 
 
 {{- define "mysql.name" -}}
-{{- default .Chart.Mysqlname .Values.mysql.nameOverride | trunc 63 | trimSuffix "-" -}}
+{{- default .Chart.Name .Values.mysql.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 
