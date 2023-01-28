@@ -46,6 +46,7 @@ mysql:
        repository: mysql
        tag: 5.7.14
     mysqlRootPassword: amin@nima#$%
+    nameOverride: mysql
     
     mysqlUser: amin
     mysqlPassword: aminamin
