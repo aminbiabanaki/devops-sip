@@ -17,8 +17,8 @@ phpmyadmin:
         enabled: true
         annotations: {}
 
-        path: /phpmyadmin
-        host: cluster
+        path: "/phpmyadmin"
+        host: "cluster"
         tls: []
         #  - secretName: chart-example-tls
         #    hosts:
