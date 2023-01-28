@@ -1,4 +1,5 @@
 name: phpmyadmin-mysql
+mysqlname: mysql 
 version: 1.0.0
 appVersion: 4.8.2
 description: phpMyAdmin is an mysql administration frontend
