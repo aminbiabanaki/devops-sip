@@ -1,0 +1,41 @@
+{{- if .Values.phpmyadmin.ingress.enabled -}}
+{{- $fullName := include "phpmyadmin.fullname" . -}}
+{{- $servicePort := .Values.phpmyadmin.service.port -}}
+{{- $ingressPath := .Values.phpmyadmin.ingress.path -}}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}
+  labels:
+    app: {{ template "phpmyadmin.name" . }}
+    chart: {{ template "phpmyadmin.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+{{- with .Values.phpmyadmin.ingress.annotations }}
+  annotations:
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+{{- if .Values.phpmyadmin.ingress.tls }}
+  tls:
+  {{- range .Values.phpmyadmin.ingress.tls }}
+    - hosts:
+      {{- range .hosts }}
+        - {{ . }}
+      {{- end }}
+      secretName: {{ .secretName }}
+  {{- end }}
+{{- end }}
+  rules:
+  {{ if .Values.phpmyadmin.ingress.host -}}
+    - host: {{ .Values.phpmyadmin.ingress.host }}
+    http:
+  {{- else -}}
+    - http:
+  {{- end }}
+        paths:
+          - path: {{ $ingressPath }}
+            backend:
+              serviceName: {{ $fullName }}
+              servicePort: http
+{{- end }}

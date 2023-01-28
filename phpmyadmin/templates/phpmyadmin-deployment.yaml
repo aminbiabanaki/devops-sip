@@ -1,0 +1,96 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ template "phpmyadmin.fullname" . }}
+  labels:
+    app: {{ template "phpmyadmin.name" . }}
+    chart: {{ template "phpmyadmin.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "phpmyadmin.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "phpmyadmin.name" . }}
+        chart: {{ template "phpmyadmin.chart" . }}
+        release: {{ .Release.Name }}
+    spec:
+      {{- if .Values.phpmyadmin.image.pullSecrets }}
+      imagePullSecrets:
+      {{- range .Values.phpmyadmin.image.pullSecrets }}
+        - name: {{ . }}
+      {{- end}}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ template "phpmyadmin.image" . }}"
+          imagePullPolicy: {{ .Values.phpmyadmin.image.pullPolicy }}
+          env:
+            - name: DATABASE_PORT_NUMBER
+              value: "{{ .Values.phpmyadmin.db.port }}"
+            {{- if .Values.phpmyadmin.db.chartName }}
+            - name: DATABASE_HOST
+              value: "{{ template "phpmyadmin.dbfullname" . }}"
+            {{- else }} 
+            - name: DATABASE_HOST
+              value: "{{ .Values.phpmyadmin.db.host }}"
+            {{- end }}
+            {{- if and (not .Values.phpmyadmin.db.chartName) (not .Values.phpmyadmin.db.host)}}
+            - name: PHPMYADMIN_ALLOW_NO_PASSWORD
+              value: "true"
+            - name: PHPMYADMIN_ALLOW_ARBITRARY_SERVER
+              value: "true"
+            {{- else }}
+
+            - name: DATABASE_USER
+              value: "root"
+            {{- if .Values.mysql.mysqlAllowEmptyPassword }}
+            - name: DATABASE_PASSWORD
+              value: ""
+            {{- else }}
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "mysql.secretName" . }}
+                  key: mysql-root-password
+            {{- end }}
+
+            - name: PHPMYADMIN_ALLOW_NO_PASSWORD
+              value: "false"
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+            - name: https
+              containerPort: 443
+              protocol: TCP
+          {{- if .Values.phpmyadmin.probesEnabled }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          {{- end }}
+          resources:
+{{ toYaml .Values.phpmyadmin.resources | indent 12 }}
+    {{- with .Values.phpmyadmin.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.phpmyadmin.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.phpmyadmin.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}

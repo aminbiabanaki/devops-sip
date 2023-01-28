@@ -1,0 +1,146 @@
+phpmyadmin:
+      image:
+        registry: docker.io
+        repository: bitnami/phpmyadmin
+        tag: 4.8.2-debian-9
+        pullPolicy: IfNotPresent
+        # pullSecrets:
+        #   - myRegistrKeySecretName
+      
+      service:
+        type: ClusterIP
+        port: 80
+      
+      db:
+        port: 3306
+        host: 
+      ingress:
+        enabled: false
+        annotations:
+          ingress.kubernetes.io/rewrite-target: /
+          nginx.ingress.kubernetes.io/rewrite-target: /
+        path: /
+        # host: foo
+        tls: []
+        #  - secretName: chart-example-tls
+        #    hosts:
+        #      - chart-example.local
+      
+      
+      probesEnabled: true
+      
+      resources: {}
+        # limits:
+        #  cpu: 100m
+        #  memory: 128Mi
+        # requests:
+        #  cpu: 100m
+        #  memory: 128Mi
+      
+      nodeSelector: {}
+      
+      tolerations: []
+      
+      affinity: {}
+mysql:
+    image:
+       registry: docker.io
+       repository: "mysql"
+       tag: "5.7.14"
+    mysqlRootPassword: amin@nima#$%
+    
+    mysqlUser: amin
+    mysqlPassword: aminamin
+    
+    # mysqlAllowEmptyPassword: true
+    
+    ## Create a database
+    ##
+    mysqlDatabase: amin
+    
+    imagePullPolicy: IfNotPresent
+    
+    extraVolumes: |
+      # - name: extras
+      #   emptyDir: {}
+    
+    extraVolumeMounts: |
+      # - name: extras
+      #   mountPath: /usr/share/extras
+      #   readOnly: true
+    
+    extraInitContainers: |
+      # - name: do-something
+      #   image: busybox
+      #   command: ['do', 'something']
+    
+    # imagePullSecrets:
+      # - name: myRegistryKeySecretName
+    
+    nodeSelector: {}
+    
+    livenessProbe:
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      timeoutSeconds: 5
+      successThreshold: 1
+      failureThreshold: 3
+    
+    readinessProbe:
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      timeoutSeconds: 1
+      successThreshold: 1
+      failureThreshold: 3
+    
+    persistence:
+      enabled: true
+      # storageClass: "-"
+      accessMode: ReadWriteOnce
+      size: 8Gi
+      annotations: {}
+    
+    resources:
+      requests:
+        memory: 256Mi
+        cpu: 100m
+    
+    configurationFiles: {}
+    #  mysql.cnf: |-
+    #    [mysqld]
+    #    skip-name-resolve
+    #    ssl-ca=/ssl/ca.pem
+    #    ssl-cert=/ssl/server-cert.pem
+    #    ssl-key=/ssl/server-key.pem
+    
+    initializationFiles: {}
+    #  first-db.sql: |-
+    #    CREATE DATABASE IF NOT EXISTS first DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
+    #  second-db.sql: |-
+    #    CREATE DATABASE IF NOT EXISTS second DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
+    
+    metrics:
+      image:
+        registry: docker.io
+        repository: prom/mysqld-exporter
+        tag: v0.10.0
+      enabled: false
+      imagePullPolicy: IfNotPresent
+      resources: {}
+      annotations: {}
+        # prometheus.io/scrape: "true"
+        # prometheus.io/port: "9104"
+      livenessProbe:
+        initialDelaySeconds: 15
+        timeoutSeconds: 5
+      readinessProbe:
+        initialDelaySeconds: 5
+        timeoutSeconds: 1
+    
+    service:
+      type: ClusterIP
+      port: 3306
+      # nodePort: 32000
+    
+    podAnnotations: {}
+    

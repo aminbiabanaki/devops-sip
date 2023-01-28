@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "mysql.fullname" . }}
+  labels:
+    app: {{ template "mysql.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+{{- if .Values.mysql.metrics.enabled }}
+  annotations:
+{{ toYaml .Values.mysql.metrics.annotations | indent 4 }}
+{{- end }}
+spec:
+  type: {{ .Values.mysql.service.type }}
+  ports:
+  - name: mysql
+    port: {{ .Values.mysql.service.port }}
+    targetPort: mysql
+    {{- if .Values.mysql.service.nodePort }}
+    nodePort: {{ .Values.mysql.service.nodePort }}
+    {{- end }}
+  {{- if .Values.mysql.metrics.enabled }}
+  - name: metrics
+    port: 9104
+    targetPort: metrics
+  {{- end }}
+  selector:
+    app: {{ template "mysql.fullname" . }}
